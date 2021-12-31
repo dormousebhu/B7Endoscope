@@ -1,4 +1,4 @@
-﻿#include <QCoreApplication>
+﻿#include <QApplication>
 #include "SettingsToolBar.h"
 
 SettingsToolBar::SettingsToolBar(QWidget *parent)
@@ -24,6 +24,17 @@ SettingsToolBar::SettingsToolBar(QWidget *parent)
     addAction(m_pActionChLanguage);
     connect(m_pActionChLanguage, &QAction::triggered, this, &SettingsToolBar::onAction);
 
+    addSeparator();
+
+    m_aboutJinghai = new QAction(tr("About Qt"), this);
+    m_aboutJinghai->setIcon(QIcon(":/res/jh-logo.png"));
+    addAction(m_aboutJinghai);
+    connect(m_aboutJinghai, &QAction::triggered, this, &SettingsToolBar::aboutJinghai);
+
+    m_aboutQt = new QAction(tr("About Qt"), this);
+    m_aboutQt->setIcon(QIcon(":/res/qt-logo.png"));
+    addAction(m_aboutQt);
+    connect(m_aboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
 }
 
 void SettingsToolBar::retranslateUi()

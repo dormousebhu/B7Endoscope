@@ -15,6 +15,7 @@ signals:
     void stopCamera();
     void showSettingsDialog();
     void translate(bool on);
+    void aboutJinghai();
 
 private slots:
     void onAction(bool checked);
@@ -22,6 +23,8 @@ private:
     QAction *m_pActionCamera;
     QAction *m_pActionSettings;
     QAction *m_pActionChLanguage;
+    QAction *m_aboutJinghai;
+    QAction *m_aboutQt;
 };
 
 #endif // SETTINGSTOOLBAR_H

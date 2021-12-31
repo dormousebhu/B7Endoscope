@@ -25,5 +25,7 @@
         <file>res/camera.png</file>
         <file>res/settings.png</file>
         <file>res/ChLanguage.png</file>
+        <file>res/qt-logo.png</file>
+        <file>res/jh-logo.png</file>
     </qresource>
 </RCC>

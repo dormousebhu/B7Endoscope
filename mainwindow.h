@@ -13,6 +13,7 @@
 #include "RemoteControl.h"
 #include "SettingDialog.h"
 #include "SettingsToolBar.h"
+#include "AboutDialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -40,8 +41,8 @@ private slots:
 
     void connectionSetup(QString ip);
     void connectionLost();
-
     void translate(bool on);
+    void showAbout();
 private:
 
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
@@ -50,7 +51,7 @@ private:
     void initToolBar();
     void loadSettings();
     void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
-
+    void defaultCompanyInfo();
     Ui::MainWindow *ui;
     CamerasDisplayWidget * m_pCentreWidget;
     PageToolBar * m_pPageToolBar;
@@ -70,6 +71,17 @@ private:
     RemoteControl m_remoteControl;
 
     QLabel * m_pLabelConnectionStatus;
+    AboutDialog *m_aboutDialog = nullptr;
+
+    /// 以下是公司信息，在派生类里会设置这些内容
+    QString m_appName;
+    QString m_companyName;
+    QString m_author;
+    QString m_website;
+    QString m_email;
+    QString m_version;
+    QString m_phoneNumber;
+    QIcon m_appIcon;
 
 };
 #endif // MAINWINDOW_H

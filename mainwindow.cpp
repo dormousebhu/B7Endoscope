@@ -14,16 +14,39 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 
 {  
-    setAttribute(Qt::WA_DeleteOnClose);
+//    setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
 
-    setWindowTitle(tr("JHEndoscope, Beijing Jinghai technoloy Co.Ltd"));
-
+    defaultCompanyInfo();
     initCamera();
     initToolBar();
     initRemoteControl();
 
     loadSettings();
+}
+
+void MainWindow::defaultCompanyInfo()
+{
+    m_appName = u8"JHEndoscope v1.0";
+    m_companyName = tr("Beijing Jinghai technoloy Co.Ltd");
+    m_author = u8"LiYuan";
+    m_website = u8"jinghai_tech@163.com";
+    m_phoneNumber = u8"15011086631";
+    m_appIcon = QIcon(":/res/jh-logo.png");
+    setWindowTitle(tr("JHEndoscope, Beijing Jinghai technoloy Co.Ltd"));
+}
+
+void MainWindow::showAbout()
+{
+    m_aboutDialog = new AboutDialog(this);
+    m_aboutDialog->setAppName(m_appName);
+    m_aboutDialog->setCompanyName(m_companyName);
+    m_aboutDialog->setWebSite(m_website);
+    m_aboutDialog->setPhoneNumber(m_phoneNumber);
+    m_aboutDialog->setIcon(m_appIcon);
+    m_aboutDialog->exec();
+
+    delete m_aboutDialog;
 }
 
 void MainWindow::initToolBar()
@@ -52,6 +75,7 @@ void MainWindow::initToolBar()
     connect(m_pSettingsToolBar, &SettingsToolBar::startCamera, this, &MainWindow::startCamera);
     connect(m_pSettingsToolBar, &SettingsToolBar::stopCamera, this, &MainWindow::stopCamera);
     connect(m_pSettingsToolBar, &SettingsToolBar::translate, this, &MainWindow::translate);
+    connect(m_pSettingsToolBar, &SettingsToolBar::aboutJinghai, this, &MainWindow::showAbout);
 }
 
 void MainWindow::initCamera()
@@ -318,6 +342,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     m_pCentreWidget->writeSettings(settings);
     settings.setValue("Geometry/MainWindow", saveGeometry());
     settings.setValue("Geometry/windowState", saveState());
+    QMainWindow::closeEvent(event);
 }
 
 MainWindow::~MainWindow()
