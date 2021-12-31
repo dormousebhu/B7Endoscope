@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/ch1.png</file>
+        <file>res/ch2.png</file>
+        <file>res/ch3.png</file>
+        <file>res/ch4.png</file>
+        <file>res/ch5.png</file>
+        <file>res/ch6.png</file>
+        <file>res/CHall.png</file>
+        <file>res/filesave1.png</file>
+        <file>res/filesave2.png</file>
+        <file>res/filesave3.png</file>
+        <file>res/filesave4.png</file>
+        <file>res/filesave5.png</file>
+        <file>res/filesave6.png</file>
+        <file>res/filesaveAll.png</file>
+        <file>res/zoomin.png</file>
+        <file>res/zoomout.png</file>
+        <file>res/video1.png</file>
+        <file>res/video2.png</file>
+        <file>res/video3.png</file>
+        <file>res/video4.png</file>
+        <file>res/video5.png</file>
+        <file>res/video6.png</file>
+        <file>res/camera.png</file>
+        <file>res/settings.png</file>
+    </qresource>
+</RCC>
