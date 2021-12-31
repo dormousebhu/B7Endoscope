@@ -1,4 +1,5 @@
-﻿#include "VideoRecordToolBar.h"
+﻿#include <QCoreApplication>
+#include "VideoRecordToolBar.h"
 
 VideoRecordToolBar::VideoRecordToolBar(QWidget *parent)
     :QToolBar(parent)
@@ -24,6 +25,16 @@ VideoRecordToolBar::VideoRecordToolBar(QWidget *parent)
     connect(m_pAction[3], &QAction::triggered, this, &VideoRecordToolBar::onAction);
     connect(m_pAction[4], &QAction::triggered, this, &VideoRecordToolBar::onAction);
     connect(m_pAction[5], &QAction::triggered, this, &VideoRecordToolBar::onAction);
+}
+
+void VideoRecordToolBar::retranslateUi()
+{
+    m_pAction[0]->setText(QCoreApplication::translate("VideoRecordToolBar", "Record CH1 video to file.", nullptr));
+    m_pAction[1]->setText(QCoreApplication::translate("VideoRecordToolBar", "Record CH2 video to file.", nullptr));
+    m_pAction[2]->setText(QCoreApplication::translate("VideoRecordToolBar", "Record CH3 video to file.", nullptr));
+    m_pAction[3]->setText(QCoreApplication::translate("VideoRecordToolBar", "Record CH4 video to file.", nullptr));
+    m_pAction[4]->setText(QCoreApplication::translate("VideoRecordToolBar", "Record CH5 video to file.", nullptr));
+    m_pAction[5]->setText(QCoreApplication::translate("VideoRecordToolBar", "Record CH6 video to file.", nullptr));
 }
 
 void VideoRecordToolBar::videoRecordStoped(int channel)

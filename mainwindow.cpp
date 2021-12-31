@@ -7,21 +7,58 @@
 #include <QPainter>
 #include <QKeyEvent>
 #include <QStandardPaths>
+#include <QTranslator>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 
 {  
+    setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
 
-    setWindowTitle("JHEndoscope, Beijing Jinghai technoloy Co.Ltd");
+    setWindowTitle(tr("JHEndoscope, Beijing Jinghai technoloy Co.Ltd"));
+
+    initCamera();
+    initToolBar();
+    initRemoteControl();
 
     loadSettings();
+}
 
+void MainWindow::initToolBar()
+{
+
+    m_pPageToolBar = new PageToolBar(this);
+    addToolBar(m_pPageToolBar);
+    connect(m_pPageToolBar, &PageToolBar::pageChanged, m_pCentreWidget, &CamerasDisplayWidget::setPage);
+    connect(m_pPageToolBar, &PageToolBar::zoomIn, m_pCentreWidget, &CamerasDisplayWidget::zoomIn);
+    connect(m_pPageToolBar, &PageToolBar::zoomOut, m_pCentreWidget, &CamerasDisplayWidget::zoomOut);
+
+
+    m_pImageSaveToolBar = new ImageSaveToolBar(this);
+    addToolBar(m_pImageSaveToolBar);
+    connect(m_pImageSaveToolBar, &ImageSaveToolBar::saveImage, this, &MainWindow::saveImage);
+
+    m_pVideoRecordToolBar = new VideoRecordToolBar(this);
+    addToolBar(m_pVideoRecordToolBar);
+    connect(m_pVideoRecordToolBar, &VideoRecordToolBar::startRecordVideo, this, &MainWindow::startRecordVideo);
+    connect(m_pVideoRecordToolBar, &VideoRecordToolBar::stopRecordVideo, this, &MainWindow::stopRecordVideo);
+
+
+    m_pSettingsToolBar = new SettingsToolBar(this);
+    addToolBar(m_pSettingsToolBar);
+    connect(m_pSettingsToolBar, &SettingsToolBar::showSettingsDialog, this, &MainWindow::showSettingsDialog);
+    connect(m_pSettingsToolBar, &SettingsToolBar::startCamera, this, &MainWindow::startCamera);
+    connect(m_pSettingsToolBar, &SettingsToolBar::stopCamera, this, &MainWindow::stopCamera);
+    connect(m_pSettingsToolBar, &SettingsToolBar::translate, this, &MainWindow::translate);
+}
+
+void MainWindow::initCamera()
+{
     for(int i = 0; i < 6; i++)
     {
-        m_pCamera[i] = new Qly::PCCamera;
+        m_pCamera[i] = new Qly::PCCamera(this);
         m_pImage[i] = new Qly::CameraImage_RGB32(this);
         m_pImage[i]->setVerticalFlip(true);
         connect(m_pCamera[i], &Qly::IndustryCamera::ImageDataChanged, m_pImage[i], &Qly::CameraImage_RGB32::setImageData);
@@ -42,36 +79,14 @@ MainWindow::MainWindow(QWidget *parent)
         if(i > 5) break;
         m_pCamera[i] ->openCameraByName(m_cameraName.at(i));
     }
-
     m_pCentreWidget = new CamerasDisplayWidget(this);
     m_pCentreWidget->attch(m_pImage);
     setCentralWidget(m_pCentreWidget);
 
-    m_pPageToolBar = new PageToolBar(this);
-    addToolBar(m_pPageToolBar);
-    connect(m_pPageToolBar, &PageToolBar::pageChanged, m_pCentreWidget, &CamerasDisplayWidget::setPage);
-    connect(m_pPageToolBar, &PageToolBar::zoomIn, m_pCentreWidget, &CamerasDisplayWidget::zoomIn);
-    connect(m_pPageToolBar, &PageToolBar::zoomOut, m_pCentreWidget, &CamerasDisplayWidget::zoomOut);
+}
 
-
-    m_imageSaveToolBar = new ImageSaveToolBar(this);
-    addToolBar(m_imageSaveToolBar);
-    connect(m_imageSaveToolBar, &ImageSaveToolBar::saveImage, this, &MainWindow::saveImage);
-
-    m_pVideoRecordToolBar = new VideoRecordToolBar(this);
-    addToolBar(m_pVideoRecordToolBar);
-    connect(m_pVideoRecordToolBar, &VideoRecordToolBar::startRecordVideo, this, &MainWindow::startRecordVideo);
-    connect(m_pVideoRecordToolBar, &VideoRecordToolBar::stopRecordVideo, this, &MainWindow::stopRecordVideo);
-
-
-    m_pSettingsToolBar = new SettingsToolBar(this);
-    addToolBar(m_pSettingsToolBar);
-    connect(m_pSettingsToolBar, &SettingsToolBar::showSettingsDialog, this, &MainWindow::showSettingsDialog);
-    connect(m_pSettingsToolBar, &SettingsToolBar::startCamera, this, &MainWindow::startCamera);
-    connect(m_pSettingsToolBar, &SettingsToolBar::stopCamera, this, &MainWindow::stopCamera);
-
-
-    //connect(m_pImage, &Qly::CameraImage::imageChanged, &m_writer, &QlyVideoWriter::setQImage);
+void MainWindow::initRemoteControl()
+{
     connect(&m_remoteControl, &RemoteControl::saveImage, this, &MainWindow::saveImage);
     connect(&m_remoteControl, &RemoteControl::startRecordVideo, this, &MainWindow::startRecordVideo);
     connect(&m_remoteControl, &RemoteControl::stopRecordVideo, this, &MainWindow::stopRecordVideo);
@@ -82,6 +97,35 @@ MainWindow::MainWindow(QWidget *parent)
     m_pLabelConnectionStatus = new QLabel(this);
     m_pLabelConnectionStatus->setText("Waiting for connection.");
     statusBar()->addWidget(m_pLabelConnectionStatus);
+}
+
+void MainWindow::translate(bool on)
+{
+    QString qmFilename;
+    static QTranslator* translator;
+    if (translator != nullptr)
+    {
+        qApp->removeTranslator(translator);
+        delete translator;
+        translator = nullptr;
+    }
+    translator = new QTranslator;
+
+    QString runPath = QCoreApplication::applicationDirPath();       //获取文件运行路径
+
+    if(on)
+    {
+        qmFilename = runPath + "/B7Endoscope_zh_CN.qm";
+    }
+    if (translator->load(qmFilename))
+    {
+        qApp->installTranslator(translator);
+    }
+    ui->retranslateUi(this);
+    m_pImageSaveToolBar->retranslateUi();
+    m_pVideoRecordToolBar->retranslateUi();
+    m_pPageToolBar->retranslateUi();
+    m_pSettingsToolBar->retranslateUi();
 }
 
 void MainWindow::connectionSetup(QString ip)
@@ -117,6 +161,10 @@ void MainWindow::loadSettings()
         m_videoPath[i] = settings.value(QString("VideoPath/CH%1").arg(i + 1), videoPath).toString();
         m_videoLength[i] = settings.value(QString("Video/Length%1").arg(i + 1), 10).toInt();
     }
+
+    m_pCentreWidget->loadSettings(settings);
+    restoreGeometry(settings.value("Geometry/MainWindow").toByteArray());
+    restoreState(settings.value("Geometry/windowState").toByteArray());
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -264,6 +312,13 @@ void MainWindow::stopRecordVideo(int n)
     }
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QSettings settings("JingHai", "JHEndoscope", this);
+    m_pCentreWidget->writeSettings(settings);
+    settings.setValue("Geometry/MainWindow", saveGeometry());
+    settings.setValue("Geometry/windowState", saveState());
+}
 
 MainWindow::~MainWindow()
 {

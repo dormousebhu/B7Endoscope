@@ -1,11 +1,12 @@
-﻿#include "ImageSaveToolBar.h"
+﻿#include <QCoreApplication>
+#include "ImageSaveToolBar.h"
 
 ImageSaveToolBar::ImageSaveToolBar(QWidget *parent)
     :QToolBar(parent)
 {
     setWindowTitle(tr("Save Image"));
     setIconSize(QSize(32, 32));
-    m_pAction[0] = new QAction(tr("Save All image to files."), this);
+    m_pAction[0] = new QAction(tr("Save All images to files."), this);
     addAction(m_pAction[0]);
     for(int i = 1; i < 7; i++)
     {
@@ -26,6 +27,18 @@ ImageSaveToolBar::ImageSaveToolBar(QWidget *parent)
     connect(m_pAction[4], &QAction::triggered, this, &ImageSaveToolBar::onAction);
     connect(m_pAction[5], &QAction::triggered, this, &ImageSaveToolBar::onAction);
     connect(m_pAction[6], &QAction::triggered, this, &ImageSaveToolBar::onAction);
+}
+
+void ImageSaveToolBar::retranslateUi()
+{
+    m_pAction[1]->setText(QCoreApplication::translate("ImageSaveToolBar", "Save CH1 image to file.", nullptr));
+    m_pAction[2]->setText(QCoreApplication::translate("ImageSaveToolBar", "Save CH2 image to file.", nullptr));
+    m_pAction[3]->setText(QCoreApplication::translate("ImageSaveToolBar", "Save CH3 image to file.", nullptr));
+    m_pAction[4]->setText(QCoreApplication::translate("ImageSaveToolBar", "Save CH4 image to file.", nullptr));
+    m_pAction[5]->setText(QCoreApplication::translate("ImageSaveToolBar", "Save CH5 image to file.", nullptr));
+    m_pAction[6]->setText(QCoreApplication::translate("ImageSaveToolBar", "Save CH6 image to file.", nullptr));
+
+    m_pAction[0]->setText(QCoreApplication::translate("ImageSaveToolBar", "Save All images to files.", nullptr));
 }
 
 void ImageSaveToolBar::onAction(bool checked)

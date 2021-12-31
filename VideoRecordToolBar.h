@@ -9,6 +9,7 @@ class VideoRecordToolBar : public QToolBar
     Q_OBJECT
 public:
     VideoRecordToolBar(QWidget *parent = nullptr);
+    void retranslateUi();
 public slots:
     void videoRecordStoped(int channel);// n = 1..6
     void videoRecordStarted(int channel);// n = 1..6

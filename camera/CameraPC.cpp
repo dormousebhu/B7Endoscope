@@ -5,7 +5,8 @@
 namespace Qly {
 
 
-PCCamera::PCCamera()
+PCCamera::PCCamera(QObject *parent)
+    :Qly::IndustryCamera(parent)
 {
 
 }

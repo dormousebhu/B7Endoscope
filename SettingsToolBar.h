@@ -9,16 +9,19 @@ class SettingsToolBar : public QToolBar
     Q_OBJECT
 public:
     SettingsToolBar(QWidget *parent = nullptr);
+    void retranslateUi();
 signals:
     void startCamera();
     void stopCamera();
     void showSettingsDialog();
+    void translate(bool on);
 
 private slots:
     void onAction(bool checked);
 private:
     QAction *m_pActionCamera;
     QAction *m_pActionSettings;
+    QAction *m_pActionChLanguage;
 };
 
 #endif // SETTINGSTOOLBAR_H

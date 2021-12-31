@@ -40,14 +40,21 @@ private slots:
 
     void connectionSetup(QString ip);
     void connectionLost();
+
+    void translate(bool on);
 private:
+
+    void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
+    void initRemoteControl();
+    void initCamera();
+    void initToolBar();
     void loadSettings();
     void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
 
     Ui::MainWindow *ui;
     CamerasDisplayWidget * m_pCentreWidget;
     PageToolBar * m_pPageToolBar;
-    ImageSaveToolBar * m_imageSaveToolBar;
+    ImageSaveToolBar * m_pImageSaveToolBar;
     VideoRecordToolBar * m_pVideoRecordToolBar;
     SettingsToolBar * m_pSettingsToolBar;
 

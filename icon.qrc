@@ -24,5 +24,6 @@
         <file>res/video6.png</file>
         <file>res/camera.png</file>
         <file>res/settings.png</file>
+        <file>res/ChLanguage.png</file>
     </qresource>
 </RCC>

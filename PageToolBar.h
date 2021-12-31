@@ -11,6 +11,7 @@ class PageToolBar : public QToolBar
 public:
     PageToolBar(QWidget *parent = nullptr);
     void setPage(int n);
+    void retranslateUi();
 signals:
     void pageChanged(int n);
     void zoomIn();

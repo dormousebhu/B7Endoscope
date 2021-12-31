@@ -25,7 +25,7 @@ private:
 class PCCamera : public Qly::IndustryCamera
 {
 public:
-    PCCamera();
+    PCCamera(QObject *parent = 0);
     bool isLive() Q_DECL_OVERRIDE;
     bool showVCDPropertyPage() Q_DECL_OVERRIDE;
     bool openCameraByName(QString deviceName);

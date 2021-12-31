@@ -8,6 +8,7 @@ class ImageSaveToolBar : public QToolBar
     Q_OBJECT
 public:
     ImageSaveToolBar(QWidget *parent = nullptr);
+    void retranslateUi();
 signals:
     void saveImage(int n);
 private slots:

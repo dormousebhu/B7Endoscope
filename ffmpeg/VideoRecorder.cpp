@@ -428,8 +428,13 @@ bool VideoRecorder::close()
     if(!m_recording) return false;
     m_recording = false;
     m_timer.stop();
-    writeFrame(nullptr);
-    writeTrailer();
+
+    if(m_width != 0) // 视频中已经有一些帧了
+    {
+        writeFrame(nullptr);
+        writeTrailer();
+    }
+
     if (m_pFormatCtx && !(m_pFormatCtx->flags & AVFMT_NOFILE))
     {
         m_errorcode = avio_closep(&m_pFormatCtx->pb);
