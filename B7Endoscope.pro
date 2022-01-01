@@ -1,5 +1,5 @@
 include(./ffmpeg/ffmpeg.pri)
-
+include(./Logger/messageLogger.pri)
 QT       += core gui
 QT      += multimediawidgets
 QT      += multimedia
