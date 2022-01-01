@@ -190,10 +190,13 @@ bool PCCamera::startGrabbing()
 
 
         QList<QCameraViewfinderSettings > ViewSets = m_camera->supportedViewfinderSettings();
-        qDebug() << ViewSets.last().resolution();
-        qDebug() << ViewSets.last().pixelFormat();
-        qDebug() << ViewSets.last().maximumFrameRate();
-        m_camera->setViewfinderSettings(ViewSets.last());
+        if(!ViewSets.isEmpty())
+        {
+            qDebug() << "Resolution = " << ViewSets.last().resolution() <<
+                        ", pixelFormat = " << ViewSets.last().pixelFormat() <<
+                        "maximumFrameRate = " << ViewSets.last().maximumFrameRate();
+            m_camera->setViewfinderSettings(ViewSets.last());
+        }
         return true;
     }
     return false;

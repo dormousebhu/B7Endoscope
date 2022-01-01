@@ -429,7 +429,7 @@ bool VideoRecorder::close()
     m_recording = false;
     m_timer.stop();
 
-    if(m_width != 0) // 视频中已经有一些帧了
+    if(m_width != 0 && m_pCodecCtx && m_pCodec && m_pFormatCtx && m_pFormatCtx->nb_streams != 0) // 视频中已经有一些帧了
     {
         writeFrame(nullptr);
         writeTrailer();
