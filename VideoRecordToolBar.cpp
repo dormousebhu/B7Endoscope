@@ -4,7 +4,7 @@
 VideoRecordToolBar::VideoRecordToolBar(QWidget *parent)
     :QToolBar(parent)
 {
-    setWindowTitle("Record Video");
+    setWindowTitle("VideoRecordToolBar");
     setIconSize(QSize(32, 32));
     for(int i = 0; i < 6; i++)
     {

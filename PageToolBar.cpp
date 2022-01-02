@@ -4,15 +4,20 @@
 PageToolBar::PageToolBar(QWidget *parent)
     :QToolBar(parent)
 {
+    setWindowTitle(tr("PageToolBar"));
     setIconSize(QSize(32, 32));
-    m_pAction[0] = new QAction(tr("Show all camera image."), this);
+
+    m_pGroup = new QActionGroup(this);
+    m_pAction[0] = new QAction(tr("Show all camera image."), m_pGroup);
     m_pAction[0]->setCheckable(true);
+    m_pGroup->addAction(m_pAction[0]);
     addAction(m_pAction[0]);
 
     for(int i = 1; i < 7; i++)
     {
-        m_pAction[i] = new QAction(tr("Show CH%1 camera image.").arg(i), this);
+        m_pAction[i] = new QAction(tr("Show CH%1 camera image.").arg(i), m_pGroup);
         m_pAction[i]->setCheckable(true);
+        m_pGroup->addAction(m_pAction[i]);
         addAction(m_pAction[i]);
     }
     m_pAction[0]->setIcon(QIcon(":/res/CHall.png"));
@@ -60,32 +65,17 @@ void PageToolBar::retranslateUi()
 
 void PageToolBar::setPage(int n)
 {
-    clearAll();
     m_pAction[n]->setChecked(true);
     emit pageChanged(n);
 }
 
-void PageToolBar::clearAll()
-{
-    for(int i = 0; i < 7; i++)
-    {
-        m_pAction[i]->setChecked(false);
-    }
-}
 void PageToolBar::onAction(bool checked )
 {
-    if(checked == false)
-    {
-        QAction * pa = (QAction *)sender();
-        pa->setChecked(true);
-        return;
-    }
-    clearAll();
+    Q_UNUSED(checked);
     for(int i = 0; i < 7; i++)
     {
         if(sender() == m_pAction[i])
         {
-            m_pAction[i]->setChecked(true);
             emit pageChanged(i);
         }
     }

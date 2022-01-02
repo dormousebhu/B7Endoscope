@@ -4,6 +4,7 @@
 SettingsToolBar::SettingsToolBar(QWidget *parent)
     :QToolBar(parent)
 {
+    setWindowTitle("SettingsToolBar");
     setIconSize(QSize(32, 32));
 
     m_pActionCamera = new QAction(tr("Start/Stop Camera"), this);

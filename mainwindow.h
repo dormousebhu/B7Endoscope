@@ -7,12 +7,8 @@
 #include "camera/CameraPC.h"
 #include "ffmpeg/VideoRecorder.h"
 #include "CamerasDisplayWidget.h"
-#include "PageToolBar.h"
-#include "ImageSaveToolBar.h"
-#include "VideoRecordToolBar.h"
 #include "RemoteControl.h"
 #include "SettingDialog.h"
-#include "SettingsToolBar.h"
 #include "AboutDialog.h"
 
 QT_BEGIN_NAMESPACE
@@ -52,12 +48,8 @@ private:
     void loadSettings();
     void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
     void defaultCompanyInfo();
-    Ui::MainWindow *ui;
-    CamerasDisplayWidget * m_pCentreWidget;
-    PageToolBar * m_pPageToolBar;
-    ImageSaveToolBar * m_pImageSaveToolBar;
-    VideoRecordToolBar * m_pVideoRecordToolBar;
-    SettingsToolBar * m_pSettingsToolBar;
+    Ui::MainWindow *ui = nullptr;
+    CamerasDisplayWidget * m_pCentreWidget = nullptr;
 
     Qly::PCCamera * m_pCamera[6];         //摄像头对象
     QStringList m_cameraName;
@@ -70,7 +62,7 @@ private:
 
     RemoteControl m_remoteControl;
 
-    QLabel * m_pLabelConnectionStatus;
+    QLabel * m_pLabelConnectionStatus = nullptr;
     AboutDialog *m_aboutDialog = nullptr;
 
     /// 以下是公司信息，在派生类里会设置这些内容

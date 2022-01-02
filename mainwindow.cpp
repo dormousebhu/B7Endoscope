@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 {  
 //    setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_QuitOnClose);
     ui->setupUi(this);
 
     defaultCompanyInfo();
@@ -51,31 +52,20 @@ void MainWindow::showAbout()
 
 void MainWindow::initToolBar()
 {
+    connect(ui->pageToolBar, &PageToolBar::pageChanged, m_pCentreWidget, &CamerasDisplayWidget::setPage);
+    connect(ui->pageToolBar, &PageToolBar::zoomIn, m_pCentreWidget, &CamerasDisplayWidget::zoomIn);
+    connect(ui->pageToolBar, &PageToolBar::zoomOut, m_pCentreWidget, &CamerasDisplayWidget::zoomOut);
 
-    m_pPageToolBar = new PageToolBar(this);
-    addToolBar(m_pPageToolBar);
-    connect(m_pPageToolBar, &PageToolBar::pageChanged, m_pCentreWidget, &CamerasDisplayWidget::setPage);
-    connect(m_pPageToolBar, &PageToolBar::zoomIn, m_pCentreWidget, &CamerasDisplayWidget::zoomIn);
-    connect(m_pPageToolBar, &PageToolBar::zoomOut, m_pCentreWidget, &CamerasDisplayWidget::zoomOut);
+    connect(ui->imageSaveToolBar, &ImageSaveToolBar::saveImage, this, &MainWindow::saveImage);
 
+    connect(ui->videoRecordToolBar, &VideoRecordToolBar::startRecordVideo, this, &MainWindow::startRecordVideo);
+    connect(ui->videoRecordToolBar, &VideoRecordToolBar::stopRecordVideo, this, &MainWindow::stopRecordVideo);
 
-    m_pImageSaveToolBar = new ImageSaveToolBar(this);
-    addToolBar(m_pImageSaveToolBar);
-    connect(m_pImageSaveToolBar, &ImageSaveToolBar::saveImage, this, &MainWindow::saveImage);
-
-    m_pVideoRecordToolBar = new VideoRecordToolBar(this);
-    addToolBar(m_pVideoRecordToolBar);
-    connect(m_pVideoRecordToolBar, &VideoRecordToolBar::startRecordVideo, this, &MainWindow::startRecordVideo);
-    connect(m_pVideoRecordToolBar, &VideoRecordToolBar::stopRecordVideo, this, &MainWindow::stopRecordVideo);
-
-
-    m_pSettingsToolBar = new SettingsToolBar(this);
-    addToolBar(m_pSettingsToolBar);
-    connect(m_pSettingsToolBar, &SettingsToolBar::showSettingsDialog, this, &MainWindow::showSettingsDialog);
-    connect(m_pSettingsToolBar, &SettingsToolBar::startCamera, this, &MainWindow::startCamera);
-    connect(m_pSettingsToolBar, &SettingsToolBar::stopCamera, this, &MainWindow::stopCamera);
-    connect(m_pSettingsToolBar, &SettingsToolBar::translate, this, &MainWindow::translate);
-    connect(m_pSettingsToolBar, &SettingsToolBar::aboutJinghai, this, &MainWindow::showAbout);
+    connect(ui->settingsToolBar, &SettingsToolBar::showSettingsDialog, this, &MainWindow::showSettingsDialog);
+    connect(ui->settingsToolBar, &SettingsToolBar::startCamera, this, &MainWindow::startCamera);
+    connect(ui->settingsToolBar, &SettingsToolBar::stopCamera, this, &MainWindow::stopCamera);
+    connect(ui->settingsToolBar, &SettingsToolBar::translate, this, &MainWindow::translate);
+    connect(ui->settingsToolBar, &SettingsToolBar::aboutJinghai, this, &MainWindow::showAbout);
 }
 
 void MainWindow::initCamera()
@@ -146,10 +136,10 @@ void MainWindow::translate(bool on)
         qApp->installTranslator(translator);
     }
     ui->retranslateUi(this);
-    m_pImageSaveToolBar->retranslateUi();
-    m_pVideoRecordToolBar->retranslateUi();
-    m_pPageToolBar->retranslateUi();
-    m_pSettingsToolBar->retranslateUi();
+    ui->imageSaveToolBar->retranslateUi();
+    ui->videoRecordToolBar->retranslateUi();
+    ui->pageToolBar->retranslateUi();
+    ui->settingsToolBar->retranslateUi();
 }
 
 void MainWindow::connectionSetup(QString ip)
@@ -200,10 +190,10 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     case Qt::Key_F4:
     case Qt::Key_F5:
     case Qt::Key_F6:
-        m_pPageToolBar->setPage(event->key() - Qt::Key_F1 + 1);
+        ui->pageToolBar->setPage(event->key() - Qt::Key_F1 + 1);
         break;
     case Qt::Key_Escape:
-        m_pPageToolBar->setPage(0);
+        ui->pageToolBar->setPage(0);
         break;
     case Qt::Key_Minus:
         m_pCentreWidget->zoomOut();
@@ -288,7 +278,7 @@ void MainWindow::recordVideoTimeout()
     {
         if(pSender == &m_videoRecorder[i])
         {
-            m_pVideoRecordToolBar->videoRecordStoped(i + 1);
+            ui->videoRecordToolBar->videoRecordStoped(i + 1);
         }
     }
 }
@@ -321,7 +311,7 @@ void MainWindow::stopRecordVideo(int n)
 {
     const int index = n - 1;
     bool ret = m_videoRecorder[index].close();
-    m_pVideoRecordToolBar->videoRecordStoped(n);
+    ui->videoRecordToolBar->videoRecordStoped(n);
     RemoteControl *pControl = qobject_cast<RemoteControl *>(sender());
     if(pControl && pControl == &m_remoteControl)
     {

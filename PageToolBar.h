@@ -19,10 +19,10 @@ signals:
 private slots:
     void onAction(bool checked);
 private:
-    void clearAll();
     QAction *m_pAction[7];
     QAction *m_pActionZoomIn;
     QAction *m_pActionZoomOut;
+    QActionGroup *m_pGroup;
 };
 
 #endif // CHTOOLBAR_H
