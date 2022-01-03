@@ -9,6 +9,8 @@
 #include <QStandardPaths>
 #include <QTranslator>
 
+const int MESSAGE_TIMEOUT = 6000;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -110,7 +112,7 @@ void MainWindow::initRemoteControl()
 
     m_pLabelConnectionStatus = new QLabel(this);
     m_pLabelConnectionStatus->setText("Waiting for connection.");
-    statusBar()->addWidget(m_pLabelConnectionStatus);
+    statusBar()->addPermanentWidget(m_pLabelConnectionStatus);
 }
 
 void MainWindow::translate(bool on)
@@ -213,6 +215,7 @@ bool MainWindow::stopCamera()
     {
         m_pCamera[i]->stopGrabbing();
     }
+    statusBar()->showMessage(tr("Stop camera."), MESSAGE_TIMEOUT);
     return true;
 }
 
@@ -223,6 +226,7 @@ bool MainWindow::startCamera()
         m_pCamera[i]->startGrabbing();
     }
 
+    statusBar()->showMessage(tr("Start camera"), MESSAGE_TIMEOUT);
     return true;
 }
 
@@ -245,6 +249,14 @@ void MainWindow::saveImage(int n)
             qDebug() << fileName;
             ret = m_pImage[i - 1]->saveImage(fileName);
         }
+    }
+    if(ret)
+    {
+        statusBar()->showMessage(tr("Save CH %1 image success.").arg(n), MESSAGE_TIMEOUT);
+    }
+    else
+    {
+        statusBar()->showMessage(tr("Save CH %1 image success.").arg(n), MESSAGE_TIMEOUT);
     }
     RemoteControl *pControl = qobject_cast<RemoteControl *>(sender());
     if(pControl && pControl == &m_remoteControl)
@@ -291,7 +303,14 @@ bool MainWindow::startRecordVideo(int n)
     QString fileName = m_videoPath[index] + QString("/CH%1_%2.avi").arg(n).arg(t.toString("yyyyMMdd_hhmmss"));
     m_videoRecorder[index].setMaxRecordTime(m_videoLength[index] * 1000);
     int ret = m_videoRecorder[index].openFile(fileName);
-
+    if(ret > 0)
+    {
+        statusBar()->showMessage(tr("Start record CH %1 video success.").arg(n), MESSAGE_TIMEOUT);
+    }
+    else
+    {
+        statusBar()->showMessage(tr("Start record CH %1 video failed.").arg(n), MESSAGE_TIMEOUT);
+    }
     RemoteControl *pControl = qobject_cast<RemoteControl *>(sender());
     if(pControl && pControl == &m_remoteControl)
     {
@@ -313,6 +332,14 @@ void MainWindow::stopRecordVideo(int n)
     bool ret = m_videoRecorder[index].close();
     ui->videoRecordToolBar->videoRecordStoped(n);
     RemoteControl *pControl = qobject_cast<RemoteControl *>(sender());
+    if(ret > 0)
+    {
+        statusBar()->showMessage(tr("Stop record CH %1 video success.").arg(n), MESSAGE_TIMEOUT);
+    }
+    else
+    {
+        statusBar()->showMessage(tr("Stop record CH %1 video failed.").arg(n), MESSAGE_TIMEOUT);
+    }
     if(pControl && pControl == &m_remoteControl)
     {
         if(ret)
