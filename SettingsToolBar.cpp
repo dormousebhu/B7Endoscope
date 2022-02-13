@@ -13,6 +13,32 @@ SettingsToolBar::SettingsToolBar(QWidget *parent)
     addAction(m_pActionCamera);
     connect(m_pActionCamera, &QAction::triggered, this, &SettingsToolBar::onAction);
 
+    m_action480p = new QAction(tr("480p"), this);
+    m_action480p->setIcon(QIcon(":/res/480.png"));
+    m_action480p->setCheckable(true);
+    addAction(m_action480p);
+    connect(m_action480p, &QAction::triggered, this, &SettingsToolBar::onResolutionChanged);
+
+    m_action720p = new QAction(tr("720p"), this);
+    m_action720p->setIcon(QIcon(":/res/720.png"));
+    m_action720p->setCheckable(true);
+    addAction(m_action720p);
+    connect(m_action720p, &QAction::triggered, this, &SettingsToolBar::onResolutionChanged);
+
+    m_action1080p = new QAction(tr("1080p"), this);
+    m_action1080p->setIcon(QIcon(":/res/1080.png"));
+    m_action1080p->setCheckable(true);
+    m_action1080p->setChecked(true);
+    addAction(m_action1080p);
+    connect(m_action1080p, &QAction::triggered, this, &SettingsToolBar::onResolutionChanged);
+
+    m_actionGroup = new QActionGroup(this);
+    m_actionGroup->addAction(m_action480p);
+    m_actionGroup->addAction(m_action720p);
+    m_actionGroup->addAction(m_action1080p);
+
+    addSeparator();
+
     m_pActionSettings = new QAction("Settings", this);
     m_pActionSettings->setIcon(QIcon(":/res/settings.png"));
     //m_pActionSettings->setCheckable(true);
@@ -36,6 +62,27 @@ SettingsToolBar::SettingsToolBar(QWidget *parent)
     m_aboutQt->setIcon(QIcon(":/res/qt-logo.png"));
     addAction(m_aboutQt);
     connect(m_aboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
+}
+
+void SettingsToolBar::onResolutionChanged(bool checked)
+{
+    Q_UNUSED(checked);
+    QAction *pAction = (QAction *)sender();
+    if(pAction == m_action480p)
+    {
+        emit resolutionChanged(QSize(640, 480));
+        return;
+    }
+    if(pAction == m_action720p)
+    {
+        emit resolutionChanged(QSize(1280, 720));
+        return;
+    }
+    if(pAction == m_action1080p)
+    {
+        emit resolutionChanged(QSize(1920, 1080));
+        return;
+    }
 }
 
 void SettingsToolBar::retranslateUi()

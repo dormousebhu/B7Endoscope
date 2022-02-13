@@ -4,8 +4,8 @@
 #include <QStackedWidget>
 #include <QScrollArea>
 #include <QSettings>
-#include "camera/ImageView.h"
-#include "camera/CameraImage_RGB32.h"
+#include "ImageView.h"
+#include "CameraCommon/CameraImage_RGB32.h"
 
 class CamerasDisplayWidget : public QStackedWidget
 {

@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/CameraCommon">
+        <file>res/dfk23g274.png</file>
+        <file>res/camera.png</file>
+        <file>res/IC-Camera.png</file>
+        <file>res/setup.png</file>
+        <file>res/slider.png</file>
+        <file>res/start.png</file>
+        <file>res/suspend.png</file>
+        <file>res/VFlip.png</file>
+        <file>res/HFlip.png</file>
+        <file>res/ColorFilter_BG.png</file>
+        <file>res/ColorFilter_GB.png</file>
+        <file>res/ColorFilter_GR.png</file>
+        <file>res/ColorFilter_RG.png</file>
+    </qresource>
+</RCC>

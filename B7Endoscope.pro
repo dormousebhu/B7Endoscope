@@ -1,5 +1,9 @@
 include(./ffmpeg/ffmpeg.pri)
 include(./Logger/messageLogger.pri)
+include(./qtOpencv/opencv4.pri)
+include(./CameraCommon/CameraCommon.pri)
+include(./CameraOpenCV/OpenCVDshowCamera.pri)
+include(./CameraHikVision/CameraHikVision.pri)
 QT       += core gui
 QT      += multimediawidgets
 QT      += multimedia
@@ -24,38 +28,30 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     AboutDialog.cpp \
     CamerasDisplayWidget.cpp \
+    FocusToolBar.cpp \
     ImageSaveToolBar.cpp \
+    ImageView.cpp \
     PageToolBar.cpp \
     RemoteControl.cpp \
     SettingDialog.cpp \
     SettingsToolBar.cpp \
     VideoRecordToolBar.cpp \
-    camera/CameraImage.cpp \
-    camera/CameraImage_RGB32.cpp \
-    camera/CameraPC.cpp \
-    camera/ImageView.cpp \
-    camera/IndustryCamera.cpp \
-    camera/PixelFormatConvert.cpp \
-    camera/imagemonitor.cpp \
+    imagemonitor.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     AboutDialog.h \
     CamerasDisplayWidget.h \
+    FocusToolBar.h \
+    ImageMonitor.h \
     ImageSaveToolBar.h \
+    ImageView.h \
     PageToolBar.h \
     RemoteControl.h \
     SettingDialog.h \
     SettingsToolBar.h \
     VideoRecordToolBar.h \
-    camera/CameraImage.h \
-    camera/CameraImage_RGB32.h \
-    camera/CameraPC.h \
-    camera/ImageMonitor.h \
-    camera/ImageView.h \
-    camera/IndustryCamera.h \
-    camera/PixelFormatConvert.h \
     mainwindow.h
 
 FORMS += \
@@ -88,7 +84,7 @@ win32{
         message("build dir 64-bit")
                 RCC_DIR += ../temp_x64/b7endoscope/rcc
                 MOC_DIR += ../temp_x64/b7endoscope/moc
-                OBJECTS_DIR = ../temp_x64/b7endoscope_/obj
+                OBJECTS_DIR = ../temp_x64/b7endoscope/obj
                 UI_DIR = ../temp_x64/b7endoscope/ui
     }
 }

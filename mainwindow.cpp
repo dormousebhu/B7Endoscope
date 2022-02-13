@@ -21,22 +21,32 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     defaultCompanyInfo();
-    initCamera();
+    initCamera2();
     initToolBar();
     initRemoteControl();
 
     loadSettings();
 }
 
+
+void MainWindow::setResolution(QSize z)
+{
+    qDebug() << z;
+    for(int i = 0; i < 6; i++)
+    {
+        m_pCamera[i]->setResolution(z);
+    }
+}
+
 void MainWindow::defaultCompanyInfo()
 {
     m_appName = u8"JHEndoscope v1.0";
-    m_companyName = tr("Beijing Jinghai technoloy Co.Ltd");
+    m_companyName = tr("Beijing Jinghai technology Co.Ltd");
     m_author = u8"LiYuan";
     m_website = u8"jinghai_tech@163.com";
     m_phoneNumber = u8"15011086631";
     m_appIcon = QIcon(":/res/jh-logo.png");
-    setWindowTitle(tr("JHEndoscope, Beijing Jinghai technoloy Co.Ltd"));
+    setWindowTitle(tr("JHEndoscope, Beijing Jinghai technology Co.Ltd"));
 }
 
 void MainWindow::showAbout()
@@ -66,39 +76,45 @@ void MainWindow::initToolBar()
     connect(ui->settingsToolBar, &SettingsToolBar::showSettingsDialog, this, &MainWindow::showSettingsDialog);
     connect(ui->settingsToolBar, &SettingsToolBar::startCamera, this, &MainWindow::startCamera);
     connect(ui->settingsToolBar, &SettingsToolBar::stopCamera, this, &MainWindow::stopCamera);
+    connect(ui->settingsToolBar, &SettingsToolBar::resolutionChanged, this, &MainWindow::setResolution);
     connect(ui->settingsToolBar, &SettingsToolBar::translate, this, &MainWindow::translate);
     connect(ui->settingsToolBar, &SettingsToolBar::aboutJinghai, this, &MainWindow::showAbout);
+
+    m_focusToolBar = new FocusToolBar(this);
+    addToolBar(Qt::TopToolBarArea, m_focusToolBar);
+    connect(m_focusToolBar, &FocusToolBar::showPage, this, &MainWindow::showPage);
 }
 
-void MainWindow::initCamera()
+void MainWindow::showPage(int i)
 {
+    qDebug() << "show Page " << i;
+    m_pCamera[i - 1]->showVCDPropertyPage();
+}
+void MainWindow::initCamera2()
+{
+    QSettings settings(qApp->applicationDirPath() + "/cameras.ini", QSettings::IniFormat, 0);
     for(int i = 0; i < 6; i++)
     {
-        m_pCamera[i] = new Qly::PCCamera(this);
+        QString name = settings.value(QString("DeviceName/Camera%1").arg(i), "").toString();
+        qDebug() << name;
+        m_cameraNames << name;
+        m_pCamera[i] = new Qly::OpenCVDShowCamera(this);
+
         m_pImage[i] = new Qly::CameraImage_RGB32(this);
         m_pImage[i]->setVerticalFlip(true);
-        connect(m_pCamera[i], &Qly::IndustryCamera::ImageDataChanged, m_pImage[i], &Qly::CameraImage_RGB32::setImageData);
+        connect(m_pCamera[i], &Qly::OpenCVDShowCamera::videoFrameReady, m_pImage[i], &Qly::CameraImage_RGB32::setVideoFrame);
         connect(m_pImage[i], &Qly::CameraImage_RGB32::imageChanged, &m_videoRecorder[i], &Qly::VideoRecorder::setImage);
         connect(&m_videoRecorder[i], &Qly::VideoRecorder::recordStoped, this, &MainWindow::recordVideoTimeout);
     }
 
-    QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
-    foreach (const QCameraInfo &cameraInfo, cameras)
+    for(int i = 0; i < 6; i++)
     {
-        m_cameraName << cameraInfo.deviceName();
-        qDebug() << "deviceName: " << cameraInfo.deviceName();
-        qDebug() << "description: "<< cameraInfo.description();
-    }
-
-    for(int i = 0; i < m_cameraName.size(); i ++)
-    {
-        if(i > 5) break;
-        m_pCamera[i] ->openCameraByName(m_cameraName.at(i));
+        qDebug() << "openCameraByName(" << i << ") is " << m_pCamera[i]->openCameraByName(m_cameraNames.at(i));
+        m_pCamera[i]->setResolution(QSize(1920, 1080));
     }
     m_pCentreWidget = new CamerasDisplayWidget(this);
     m_pCentreWidget->attch(m_pImage);
     setCentralWidget(m_pCentreWidget);
-
 }
 
 void MainWindow::initRemoteControl()
@@ -215,6 +231,7 @@ bool MainWindow::stopCamera()
     {
         m_pCamera[i]->stopGrabbing();
     }
+
     statusBar()->showMessage(tr("Stop camera."), MESSAGE_TIMEOUT);
     return true;
 }
@@ -224,8 +241,9 @@ bool MainWindow::startCamera()
     for(int i = 0; i < 6; i++)
     {
         m_pCamera[i]->startGrabbing();
+        //m_pCamera[i]->setFrameRate(1, 20);
+        //m_pCamera[i]->setResolutionIndex(3);
     }
-
     statusBar()->showMessage(tr("Start camera"), MESSAGE_TIMEOUT);
     return true;
 }
@@ -303,7 +321,7 @@ bool MainWindow::startRecordVideo(int n)
     QString fileName = m_videoPath[index] + QString("/CH%1_%2.avi").arg(n).arg(t.toString("yyyyMMdd_hhmmss"));
     m_videoRecorder[index].setMaxRecordTime(m_videoLength[index] * 1000);
     int ret = m_videoRecorder[index].openFile(fileName);
-    if(ret > 0)
+    if(ret >= 0)
     {
         statusBar()->showMessage(tr("Start record CH %1 video success.").arg(n), MESSAGE_TIMEOUT);
     }

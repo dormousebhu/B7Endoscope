@@ -11,6 +11,33 @@ PCCamera::PCCamera(QObject *parent)
 
 }
 
+bool PCCamera::macroFocus()
+{
+    qDebug() << "PCCamera::macroFocus()";
+    if(m_camera)
+    {
+        QCameraFocus *focus = m_camera->focus();
+        qDebug() <<"isFocusPointModeSupported(FocusPointAuto)" << focus->isFocusPointModeSupported(QCameraFocus::QCameraFocus::FocusPointAuto);
+        qDebug() <<"isFocusPointModeSupported(FocusPointCenter)" << focus->isFocusPointModeSupported(QCameraFocus::QCameraFocus::FocusPointCenter);
+        qDebug() <<"isFocusPointModeSupported(FocusPointCustom)" << focus->isFocusPointModeSupported(QCameraFocus::QCameraFocus::FocusPointCustom);
+
+        focus->setFocusPointMode(QCameraFocus::FocusPointCustom);
+
+
+        qDebug() <<"isFocusModeSupported(ManualFocus)" << focus->isFocusModeSupported(QCameraFocus::QCameraFocus::ManualFocus);
+        qDebug() <<"isFocusModeSupported(HyperfocalFocus)" << focus->isFocusModeSupported(QCameraFocus::QCameraFocus::HyperfocalFocus);
+        qDebug() <<"isFocusModeSupported(InfinityFocus)" << focus->isFocusModeSupported(QCameraFocus::QCameraFocus::InfinityFocus);
+        qDebug() <<"isFocusModeSupported(AutoFocus)" << focus->isFocusModeSupported(QCameraFocus::QCameraFocus::AutoFocus);
+        qDebug() <<"isFocusModeSupported(ContinuousFocus)" << focus->isFocusModeSupported(QCameraFocus::QCameraFocus::ContinuousFocus);
+        if(focus->isFocusModeSupported(QCameraFocus::QCameraFocus::AutoFocus))
+        {
+            focus->setFocusMode(QCameraFocus::MacroFocus);
+            return true;
+        }
+    }
+    return false;
+}
+
 QList<QVideoFrame::PixelFormat> PCCameraVideoSurface::supportedPixelFormats(
         QAbstractVideoBuffer::HandleType handleType) const
 {
@@ -104,18 +131,73 @@ bool PCCamera::openCameraByInfo(QCameraInfo info)
         }
         m_surface = new PCCameraVideoSurface(this);   
         m_camera->setViewfinder(m_surface);
-
-//        QList<QSize> s = m_camera->supportedViewfinderResolutions();
-//        QCameraViewfinderSettings  settings = m_camera->viewfinderSettings();
-//        settings.setResolution(s.last());
-//        m_camera->setViewfinderSettings(settings);
-//        qDebug() << "Resolution: " << s;
-
         m_DeviceModelName = info.description();
-        m_camera->setCaptureMode(QCamera::CaptureVideo);
+
+       // connect(m_camera, &QCamera::stateChanged, this, &PCCamera::setResolution);
+
         return true;
     }
     return false;
+}
+
+void PCCamera::setResolution(QCamera::State state)
+{
+    if(state == QCamera::ActiveState)
+    {
+//        QList<QSize> s = m_camera->supportedViewfinderResolutions();
+//        qDebug() << "supportedViewfinderResolutions = " << s;
+
+//        QCameraViewfinderSettings  settings = m_camera->viewfinderSettings();
+//        settings.setResolution(s.at(0));
+//        m_camera->setViewfinderSettings(settings);
+    }
+}
+
+void PCCamera::setFrameRate(double min, double max)
+{
+    if(m_camera)
+    {
+        QCameraViewfinderSettings  settings = m_camera->viewfinderSettings();
+        QList<QCamera::FrameRateRange> range = m_camera->supportedViewfinderFrameRateRanges(settings) ;
+        qDebug() << u8"支持的帧率数量 = " <<  range.size();
+        if(range.size() != 0)
+        {
+            qDebug() << u8"最小 FrameRate = " <<  range.at(0).minimumFrameRate;
+            qDebug() << u8"最大 FrameRate = " <<  range.at(0).maximumFrameRate;
+        }
+//    settings.setMaximumFrameRate(max);
+//    settings.setMinimumFrameRate(min);
+//    m_camera->setViewfinderSettings(settings);
+    }
+}
+void PCCamera::setResolutionIndex(int n)
+{
+    if(m_camera)
+    {
+        qDebug() << "in PCCamera::setResolutionIndex(int n)";
+        QList<QSize> s = m_camera->supportedViewfinderResolutions();
+        if(s.isEmpty()) return;
+        qDebug() << "supportedViewfinderResolutions = " << s;
+        n = qBound(0, n, s.size() - 1);
+        QCameraViewfinderSettings  settings = m_camera->viewfinderSettings();
+        settings.setResolution(s.at(n));
+        m_camera->setViewfinderSettings(settings);
+        qDebug() << "Resolution: " << s.at(n);
+    }
+}
+
+bool PCCamera::setResolution(QSize z)
+{
+    qDebug() << "in PCCamera::setResolution(QSize z)";
+    m_resolution = z;
+    if(m_camera && isLive())
+    {
+        QCameraViewfinderSettings  settings = m_camera->viewfinderSettings();
+        settings.setResolution(z);
+        m_camera->setViewfinderSettings(settings);
+        qDebug() << "setResolution: " << z;
+    }
+    return true;
 }
 
 bool PCCamera::openDefaultCamera()
@@ -186,17 +268,15 @@ bool PCCamera::startGrabbing()
     if(m_camera)
     {
         m_imageCount = 0;
-        m_camera->start();
 
-
-        QList<QCameraViewfinderSettings > ViewSets = m_camera->supportedViewfinderSettings();
-        if(!ViewSets.isEmpty())
+        m_camera->load();
+        if(!m_resolution.isEmpty())
         {
-            qDebug() << "Resolution = " << ViewSets.last().resolution() <<
-                        ", pixelFormat = " << ViewSets.last().pixelFormat() <<
-                        "maximumFrameRate = " << ViewSets.last().maximumFrameRate();
-            m_camera->setViewfinderSettings(ViewSets.last());
+            QCameraViewfinderSettings  settings = m_camera->viewfinderSettings();
+            settings.setResolution(m_resolution);
+            m_camera->setViewfinderSettings(settings);
         }
+        m_camera->start();
         return true;
     }
     return false;

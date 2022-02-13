@@ -27,5 +27,16 @@
         <file>res/ChLanguage.png</file>
         <file>res/qt-logo.png</file>
         <file>res/jh-logo.png</file>
+        <file>res/720p.png</file>
+        <file>res/1080p.png</file>
+        <file>res/480.png</file>
+        <file>res/720.png</file>
+        <file>res/1080.png</file>
+        <file>res/set256-1.png</file>
+        <file>res/set256-2.png</file>
+        <file>res/set256-3.png</file>
+        <file>res/set256-4.png</file>
+        <file>res/set256-5.png</file>
+        <file>res/set256-6.png</file>
     </qresource>
 </RCC>

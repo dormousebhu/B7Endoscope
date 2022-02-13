@@ -1,0 +1,40 @@
+﻿/****************************************************************************
+** file: CameraImage_RGB24.h
+** brief: CameraImage 类的派生类。内部存储图像类型为 RGB888。
+** Copyright (C) LiYuan
+** Author: LiYuan
+** E-Mail: 18069211#qq(.)com
+** Version 1.0.1
+** Last modified: 2019.01.11
+** Modified By: LiYuan
+****************************************************************************/
+
+#ifndef CAMERAIMAGE_RGB24_H
+#define CAMERAIMAGE_RGB24_H
+
+#include <QObject>
+#include "CameraImage.h"
+
+namespace Qly {
+
+class CameraImage_RGB24 : public CameraImage
+{
+    Q_OBJECT
+public:
+    explicit CameraImage_RGB24(QObject *parent = 0);
+public slots:
+    void setRGBImage(const uint8_t *imgBuf, int stride, AVPixelFormat format, QSize size) Q_DECL_OVERRIDE;
+    void setImage(const QImage &image) Q_DECL_OVERRIDE;
+    void setYUV422Image(const uint8_t *imgBuf, AVPixelFormat format, QSize size) Q_DECL_OVERRIDE;
+//    void setRGB24Image(const uint8_t *imgBuf, QSize size) Q_DECL_OVERRIDE;
+//    void setRGB32Image(const uint8_t *imgBuf, QSize size) Q_DECL_OVERRIDE;
+//    void setMono8Image(const uint8_t *imgBuf, QSize size) Q_DECL_OVERRIDE;
+    void setBayerImage(const uint8_t *imgBuf, QSize size) Q_DECL_OVERRIDE;
+    void fillImageTestPattern() Q_DECL_OVERRIDE;
+private:
+    void flipImage(QImage &image, FlipMode flip_mode) Q_DECL_OVERRIDE;
+    void imageChangedHook();
+};
+
+} //namespace Qly
+#endif // CAMERAIMAGE_H

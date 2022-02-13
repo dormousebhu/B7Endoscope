@@ -24,9 +24,15 @@ private:
 
 class PCCamera : public Qly::IndustryCamera
 {
+    Q_OBJECT
 public:
     PCCamera(QObject *parent = 0);
+
+    bool macroFocus();
     bool isLive() Q_DECL_OVERRIDE;
+    void setFrameRate(double min, double max);
+    void setResolutionIndex(int n);
+    bool setResolution(QSize z);
     bool showVCDPropertyPage() Q_DECL_OVERRIDE;
     bool openCameraByName(QString deviceName);
     bool openCameraByInfo(QCameraInfo info);
@@ -64,9 +70,12 @@ public:
     bool sharpness(int &nValue) Q_DECL_OVERRIDE;
     bool sharpnessEnable(bool &on) Q_DECL_OVERRIDE;
     bool setSharpnessEnable(bool on) Q_DECL_OVERRIDE;
+private slots:
+    void setResolution(QCamera::State state);
 private:
     QCamera * m_camera = nullptr;
     PCCameraVideoSurface * m_surface = nullptr;
+    QSize m_resolution;
 };
 
 } //namespace Qly

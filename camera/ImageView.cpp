@@ -53,6 +53,10 @@ void ImageView::setMousePositionPickMode(bool on)
 
 void ImageView::wheelEvent(QWheelEvent *event)
 {
+    if(!m_wheelZoom)
+    {
+        return QWidget::wheelEvent(event);
+    }
     bool isCtrlPressed = QGuiApplication::keyboardModifiers() & Qt::ControlModifier;
     bool isAltPressed = QGuiApplication::keyboardModifiers() & Qt::AltModifier;
     if(isCtrlPressed | isAltPressed)

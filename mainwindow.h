@@ -3,13 +3,15 @@
 
 #include <QMainWindow>
 #include <QLabel>
-#include "camera/CameraImage_RGB32.h"
-#include "camera/CameraPC.h"
+#include "CameraCommon/CameraImage_RGB32.h"
+#include "CameraOpenCV/OpenCVDshowCamera.h"
 #include "ffmpeg/VideoRecorder.h"
 #include "CamerasDisplayWidget.h"
 #include "RemoteControl.h"
 #include "SettingDialog.h"
 #include "AboutDialog.h"
+
+#include "FocusToolBar.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -39,11 +41,14 @@ private slots:
     void connectionLost();
     void translate(bool on);
     void showAbout();
+
+    void setResolution(QSize z);
+    void showPage(int i);
 private:
 
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
     void initRemoteControl();
-    void initCamera();
+    void initCamera2();
     void initToolBar();
     void loadSettings();
     void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
@@ -51,8 +56,9 @@ private:
     Ui::MainWindow *ui = nullptr;
     CamerasDisplayWidget * m_pCentreWidget = nullptr;
 
-    Qly::PCCamera * m_pCamera[6];         //摄像头对象
-    QStringList m_cameraName;
+    //摄像头对象
+    Qly::OpenCVDShowCamera *m_pCamera[6];
+    QStringList m_cameraNames;
     Qly::CameraImage_RGB32 *m_pImage[6];
     Qly::VideoRecorder m_videoRecorder[6];
 
@@ -74,6 +80,8 @@ private:
     QString m_version;
     QString m_phoneNumber;
     QIcon m_appIcon;
+
+    FocusToolBar *m_focusToolBar = nullptr;
 
 };
 #endif // MAINWINDOW_H
